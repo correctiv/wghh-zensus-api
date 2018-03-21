@@ -1,3 +1,4 @@
 geopy==1.12.0
 Flask==0.12.2
+pysqlite3
 uWSGI==2.0.17
