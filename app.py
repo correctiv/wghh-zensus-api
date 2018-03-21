@@ -1,9 +1,8 @@
 import json
 import os
-from flask import Flask, g, jsonify, request
+from flask import Flask, g, jsonify, request, Response
 
-from database import query_db
-from geocoder import geocode
+from lookup import query
 
 
 app = Flask(__name__)
@@ -16,11 +15,14 @@ app.config.from_envvar('SETTINGS', silent=True)
 
 @app.route('/')
 def api():
-    loc = geocode(request.args['q'])
-    if loc:
-        res = query_db(loc.longitude, loc.latitude)
-        if res:
-            return jsonify({'data': json.loads(res[0])})
+    if 'street' not in request.args or 'nr' not in request.args:
+        return Response('<h1>400</h1>', status=400)
+    data, match = query(request.args)
+    if data:
+        return jsonify({
+            'data': json.loads(data),
+            'match': match
+        })
     return jsonify({'data': None})
 
 
