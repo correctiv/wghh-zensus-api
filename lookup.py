@@ -8,7 +8,8 @@ from geocoder import geocode
 def _query_data(lon, lat):
     db = get_db()
     cursor = db.execute(
-        'select data from grids where (%s between x1 and x2) and (%s between y3 and y1)' % (lon, lat)
+        'select data from grids where (? between x1 and x2) and (? between y3 and y1)',
+        (lon, lat)
     )
     res = cursor.fetchone()
     if res:
@@ -18,7 +19,8 @@ def _query_data(lon, lat):
 def _query_adress(street_name, housenr):
     db = get_db()
     cursor = db.execute(
-        'select lon, lat from adresses where street_name = "%s" and housenr = "%s"' % (street_name, housenr)
+        'select lon, lat from adresses where street_name=? and housenr=?',
+        (street_name, housenr)
     )
     return cursor.fetchone()
 
@@ -26,7 +28,8 @@ def _query_adress(street_name, housenr):
 def _query_street(street_name):
     db = get_db()
     cursor = db.execute(
-        'select lon, lat from streets where street_name = "%s"' % street_name
+        'select lon, lat from streets where street_name=?',
+        (street_name,)
     )
     return cursor.fetchone()
 
