@@ -1,3 +1,4 @@
+import subprocess
 import sqlite3
 from flask import current_app, g
 
@@ -15,3 +16,12 @@ def get_db():
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
+
+
+def init_db():
+    # db = get_db()
+    # with current_app.open_resource('init_db.sql', mode='r') as f:
+    #     script = f.read().strip()
+    # db.cursor().executescript(script)
+    # db.commit()
+    subprocess.run(['sqlite3', 'data.db'], stdin=current_app.open_resource('init_db.sql'))

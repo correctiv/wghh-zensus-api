@@ -2,6 +2,7 @@ import json
 import os
 from flask import Flask, g, jsonify, request, Response
 
+from database import init_db
 from lookup import query
 
 
@@ -31,3 +32,10 @@ def close_db(error):
     """Closes the database again at the end of the request."""
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
+
+
+@app.cli.command('initdb')
+def initdb_command():
+    """Initializes the database."""
+    init_db()
+    print('Initialized the database.')
