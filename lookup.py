@@ -79,3 +79,16 @@ def query(args):
             print('can\'t find results for "%s"' % adress)
 
     return None, None
+
+
+def suggest(value):
+    value = value.lower().strip()
+    if value:
+        db = get_db()
+        cursor = db.execute(
+            'select street_name from streets where street_name like ?',
+            (value + '%',)
+        )
+        data = cursor.fetchall()
+        return [d[0].title() for d in data]
+    return []

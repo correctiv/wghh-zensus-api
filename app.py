@@ -3,7 +3,7 @@ import os
 from flask import Flask, g, jsonify, request, Response
 
 from database import init_db
-from lookup import query
+from lookup import query, suggest as _suggest
 
 
 app = Flask(__name__)
@@ -25,6 +25,14 @@ def api():
             'match': match
         })
     return jsonify({'data': None})
+
+
+@app.route('/suggest')
+def suggest():
+    if 'q' not in request.args:
+        return Response('<h1>400</h1>', status=400)
+    data = _suggest(request.args['q'])
+    return jsonify({'data': data})
 
 
 @app.teardown_appcontext
