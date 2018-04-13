@@ -1,8 +1,10 @@
 import json
 import os
-from flask import Flask, g, jsonify, request, Response
 
 from database import init_db
+
+from flask import Flask, Response, g, jsonify, request
+
 from lookup import query, suggest as _suggest
 
 
@@ -16,8 +18,11 @@ app.config.from_envvar('SETTINGS', silent=True)
 
 @app.route('/')
 def api():
+    if 'q' in request.args and 'street' not in request.args:
+        data = _suggest(request.args['q'])
+        return jsonify({'data': data})
     if 'street' not in request.args or 'nr' not in request.args:
-        return Response('<h1>400</h1>', status=400)
+        return Response('<h1>400 no address</h1>', status=400)
     data, match = query(request.args)
     if data:
         return jsonify({
@@ -25,14 +30,6 @@ def api():
             'match': match
         })
     return jsonify({'data': None})
-
-
-@app.route('/suggest')
-def suggest():
-    if 'q' not in request.args:
-        return Response('<h1>400</h1>', status=400)
-    data = _suggest(request.args['q'])
-    return jsonify({'data': data})
 
 
 @app.teardown_appcontext
